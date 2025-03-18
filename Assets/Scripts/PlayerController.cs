@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(TouchingDirections), typeof(Damageable))]
 public class PlayerController : MonoBehaviour
@@ -16,6 +17,20 @@ public class PlayerController : MonoBehaviour
     Animator animator;
     TouchingDirections touchingDirections;
     Damageable damageable;
+
+    private void Update()
+    {
+        if (!IsAlive)
+        {
+            Invoke("LoadGameOverScene", 2f);
+        }
+    }
+
+    private void LoadGameOverScene()
+    {
+        SceneManager.LoadScene(8);
+    }
+
     public float CurrentMoveSpeed
     {
         get

@@ -8,4 +8,3 @@ public class TutorialManager : MonoBehaviour
         SceneManager.LoadScene(3);
     }
 }
-//ghhggg
