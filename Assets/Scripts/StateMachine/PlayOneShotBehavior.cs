@@ -6,44 +6,54 @@ public class PlayOneShotBehavior : StateMachineBehaviour
     public float volume = 1f;
     public bool playOnEnter = true, playOnExit = false, playAfterDelay = false;
 
-    //delayed sound timer
+    // Delayed sound timer
     public float playDelay = 0.25f;
     private float timeSinceEntered = 0;
     private bool hasDelayedSoundPlayed = false;
 
-    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+    private bool IsSoundEffectsEnabled()
+    {
+        return PlayerPrefs.GetInt("SoundEffectsEnabled", 1) == 1;
+    }
+
+    private void PlaySound(Vector3 position)
+    {
+        if (IsSoundEffectsEnabled() && soundToPlay != null)
+        {
+            AudioSource.PlayClipAtPoint(soundToPlay, position, volume);
+        }
+    }
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (playOnEnter)
         {
-            AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
+            PlaySound(animator.gameObject.transform.position);
         }
 
         timeSinceEntered = 0;
         hasDelayedSoundPlayed = false;
     }
 
-    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(playAfterDelay && !hasDelayedSoundPlayed)
+        if (playAfterDelay && !hasDelayedSoundPlayed)
         {
-            timeSinceEntered += Time.deltaTime; 
-            
-            if(timeSinceEntered > playDelay)
+            timeSinceEntered += Time.deltaTime;
+
+            if (timeSinceEntered > playDelay)
             {
-                AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
+                PlaySound(animator.gameObject.transform.position);
                 hasDelayedSoundPlayed = true;
             }
         }
     }
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (playOnExit)
         {
-            AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
+            PlaySound(animator.gameObject.transform.position);
         }
     }
 }

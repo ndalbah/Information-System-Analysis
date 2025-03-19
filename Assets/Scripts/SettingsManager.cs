@@ -1,13 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
+using UnityEngine.UI;
 
-public class SettingsManager : MonoBehaviour 
+public class SettingsManager : MonoBehaviour
 {
-    MusicPlayer musicPlayer;
+    private MusicPlayer musicPlayer;
+    public Toggle musicToggle;
+    public Toggle soundEffectsToggle;
+
+    private void Start()
+    {
+        musicPlayer = FindObjectOfType<MusicPlayer>();
+
+        bool isMusicOn = PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
+        bool isSoundEffectsOn = PlayerPrefs.GetInt("SoundEffectsEnabled", 1) == 1;
+
+        musicToggle.isOn = isMusicOn;
+        soundEffectsToggle.isOn = isSoundEffectsOn;
+
+        musicToggle.onValueChanged.AddListener(ToggleMusic);
+        soundEffectsToggle.onValueChanged.AddListener(ToggleSoundEffects);
+    }
+
     public void OnBack()
     {
         SceneManager.LoadScene(1);
@@ -18,14 +32,20 @@ public class SettingsManager : MonoBehaviour
         SceneManager.LoadScene(4);
     }
 
-    public void OnMuteBackgroundMusic()
+    private void ToggleMusic(bool isOn)
     {
-        musicPlayer.introSource.mute = true;
-        musicPlayer.loopSource.mute = true;
+        if (musicPlayer != null)
+        {
+            musicPlayer.ToggleMusic(isOn);
+        }
+
+        PlayerPrefs.SetInt("MusicEnabled", isOn ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
-    public bool OnToggleValueChanged()
+    private void ToggleSoundEffects(bool isOn)
     {
-        return true;
+        PlayerPrefs.SetInt("SoundEffectsEnabled", isOn ? 1 : 0);
+        PlayerPrefs.Save();
     }
 }
